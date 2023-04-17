@@ -1,21 +1,12 @@
 using Test
-using OrdinaryDiffEq
-using CompartmentalModelServer: greet, problem, solution, simulate
+using OrdinaryDiffEq: ODEProblem
+using CompartmentalModelServer: greet, problem, solution, simulate, ModelSolution
 
 @testset "CompartmentalModelServer" begin
-    @testset "greet" begin
-        @test greet() == "Hello World!"
-    end
-    @testset "problem" begin
-        prob = problem()
-        @test prob isa ODEProblem
-    end
-    @testset "solution" begin
-        sol = solution()
-        @test sol isa CompartmentalModelServer.ModelSolution
-    end
-    @testset "simulate" begin
-        newsim = simulate(; Snew = 888.0::Float64, βnew = 0.7::Float64)
-        @test newsim isa CompartmentalModelServer.ModelSolution
-    end
+    @testset "greet" begin @test greet() == "Hello World!" end
+    @testset "problem" begin @test problem() isa ODEProblem end
+    @testset "solution" begin @test solution() isa ModelSolution end
+    @testset "simulate" begin @test simulate(; Snew = 888.0::Float64,
+                                             βnew = 0.7::Float64) isa
+                                    ModelSolution end
 end
