@@ -38,7 +38,7 @@ Oxygen.@get "/solution" ()->SOL
 
 @swagger """
 /simulate:
-  post:
+  get:
     description: Returns a new SIR solution given the initial conditions, parameters and timespan passed as query parameters.
     parameters:
       - name: S
@@ -87,7 +87,7 @@ Oxygen.@get "/solution" ()->SOL
       '200':
         description: Successfully returned dictionary containing the simulation inputs and new solution.
 """
-Oxygen.@post "/simulate" function (req::HTTP.Request)
+Oxygen.@get "/simulate" function (req::HTTP.Request)
 
     # capture all query parameters
     params = Oxygen.queryparams(req)
@@ -101,31 +101,18 @@ Oxygen.@post "/simulate" function (req::HTTP.Request)
     tstart = tryparse(Float64, get(params, "tstart", ""))
     tstop = tryparse(Float64, get(params, "tstop", ""))
 
-    # create named tuple with existing parameters
-    _simnames = (:Snew, :Inew, :Rnew, :βnew, :γnew, :tstart, :tstop)
-    _simvalues = (S, I, R, β, γ, tstart, tstop)
-    idxs = _simvalues .|> !isnothing |> _idxs_with_value
-    simnames = getindex.((_simnames,), idxs)
-    simvalues = getindex.((_simvalues,), idxs)
+    # prepare all simulation parameter keys and values
+    _input_keys = (:Snew, :Inew, :Rnew, :βnew, :γnew, :tstart, :tstop)
+    _input_vals = (S, I, R, β, γ, tstart, tstop)
 
-    # pass no keyword args if none exist
-    if isempty(simnames) && isempty(simvalues)
-        return simulate()
-    else
-        nt = NamedTuple{simnames}(simvalues)
-        return simulate(; nt...)
-    end
-end
+    # keep only given simulation parameter keys and values
+    idxs = filter(!isnothing, _input_vals)
+    input_keys = _input_keys[[idxs...]]
+    input_vals = _input_vals[[idxs...]]
+    inputs = (; zip(input_keys, input_vals)...)
 
-"Returns element index if element has value. Skips any missing elements."
-function _idxs_with_value(idxs)
-    map(enumerate(idxs)) do (idx, hasvalue)
-        if hasvalue
-            idx
-        else
-            missing
-        end
-    end |> skipmissing |> collect
+    # create new model solution
+    return simulate(; inputs...)
 end
 
 Oxygen.serve()
