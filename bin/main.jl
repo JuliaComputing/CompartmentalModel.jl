@@ -1,3 +1,7 @@
+using Pkg
+Pkg.activate(dirname(@__DIR__))
+Pkg.instantiate()
+
 import Oxygen
 import HTTP
 using CompartmentalModelServer: greet, problem, solution, simulate
