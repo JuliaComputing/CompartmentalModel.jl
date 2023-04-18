@@ -16,7 +16,21 @@ const DEFAULTS = (; S = 999.0::Float64, I = 1.0::Float64, R = 0.0::Float64,
                   β = (1 / 2)::Float64, γ = (1 / 3)::Float64,
                   tstart = 0.0::Float64, tstop = 30.0::Float64)
 
-"Construct the compartmental model."
+"""
+    system()::ODESystem
+
+Construct the basic epidemiology compartmental model, the SIR model.
+
+```math
+\begin{equation}
+    \begin{aligned}
+        \frac{dS}{dt} &= -{\frac{\beta IS}{N}}, \\
+        \frac{dI}{dt} &= {\frac{\beta IS}{N}} - \gamma I, \\
+        \frac{dR}{dt} &= \gamma I,
+    \end{aligned}
+\end{equation}
+```
+"""
 function system()::ODESystem
 
     # define independent variable and differentiable
@@ -44,10 +58,13 @@ function system()::ODESystem
     return structural_simplify(_model)
 end
 
-"Constructs the original compartmental model ode problem."
-function problem(; states = Float64[], params = Float64[],
-                 tspan = (DEFAULTS.tstart, DEFAULTS.tstop))
-    ODEProblem(system(), states, tspan, params)
+"""
+    problem(sys = system())::ODEProblem
+    
+Constructs the original SIR model ode problem using `CompartmentalModelServer.DEFAULTS`.
+"""
+function problem(sys = system())
+    ODEProblem(sys, Float64[], (DEFAULTS.tstart, DEFAULTS.tstop), Float64[])
 end
 
 "Holds values for beta and gamma as well as serialization/deserialization information."
@@ -73,8 +90,16 @@ end
 
 StructTypes.StructType(::Type{ModelSolution}) = StructTypes.Struct()
 
-"Constructs the original compartmental model ode solution and returns an object that can be serialized to JSON."
-solution = (prob = problem()) -> ModelSolution(solve(prob, Tsit5()), prob)
+"""
+    solution(prob = problem())::ModelSolution
+    
+Constructs the original compartmental model ode solution and returns an object that can be
+serialized to JSON.
+"""
+function solution(prob = problem())
+    sol = solve(prob, Tsit5())
+    ModelSolution(sol, prob)
+end
 
 """
     simulate(; Snew, Inew, Rnew, βnew, γnew, tstart, tstop)::ModelSolution
@@ -87,10 +112,8 @@ function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
                   βnew = DEFAULTS.β, γnew = DEFAULTS.γ,
                   tstart = DEFAULTS.tstart, tstop = DEFAULTS.tstop)
 
-    # use originally defined model
+    # use originally defined model to unpack states and parameters
     sys = system()
-
-    # unpack states and parameters
     t = ModelingToolkit.get_iv(sys)
     @unpack S(t), I(t), R(t) = ModelingToolkit.get_states(sys)
     β, γ = ModelingToolkit.get_ps(sys)
@@ -100,7 +123,7 @@ function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
                      p = [β => βnew, γ => γnew])
 
     # solve and return
-    newsol = solve(newprob, Tsit5())
+    newsol = solution(newprob)
     return ModelSolution(newsol, newprob)
 end
 
