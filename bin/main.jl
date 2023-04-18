@@ -119,4 +119,4 @@ Oxygen.@get "/simulate" function (req::HTTP.Request)
     return simulate(; inputs...)
 end
 
-Oxygen.serve()
+Oxygen.serve(; host = "0.0.0.0", port = parse(Int, get(ENV, "PORT", "8080")))
