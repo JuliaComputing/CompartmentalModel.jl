@@ -45,7 +45,10 @@ function system()::ODESystem
 end
 
 "Constructs the original compartmental model ode problem."
-problem() = ODEProblem(system(), Float64[], (DEFAULTS.tstart, DEFAULTS.tstop), Float64[])
+function problem(; states = Float64[], params = Float64[],
+                 tspan = (DEFAULTS.tstart, DEFAULTS.tstop))
+    ODEProblem(system(), states, tspan, params)
+end
 
 "Holds values for beta and gamma as well as serialization/deserialization information."
 struct ModelParameters
@@ -88,17 +91,24 @@ function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
     sys = system()
 
     # unpack states and parameters
-    @unpack S(t), I(t), R(t) = ModelingToolkit.states(sys)
-    β, γ = ModelingToolkit.parameters(sys)
+    t = ModelingToolkit.get_iv(sys)
+    @unpack S(t), I(t), R(t) = ModelingToolkit.get_states(sys)
+    β, γ = ModelingToolkit.get_ps(sys)
 
     # construct new problem
-    prob = remake(problem(); u0 = [S => Snew, I => Inew, R => Rnew],
-                  p = [β => βnew, γ => γnew],
-                  tspan = (tstart, tstop))
+    newprob = remake(problem(); u0 = [Snew, Inew, Rnew], tspan = (tstart, tstop),
+                     p = [β => βnew, γ => γnew])
 
     # solve and return
-    sol = solve(prob, Tsit5())
-    return ModelSolution(sol, prob)
+    newsol = solve(newprob, Tsit5())
+    return ModelSolution(newsol, newprob)
+end
+
+function __init__()
+    system()
+    problem()
+    solution()
+    simulate()
 end
 
 end # module CompartmentalModelServer
