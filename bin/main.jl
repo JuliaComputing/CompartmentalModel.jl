@@ -106,7 +106,7 @@ Oxygen.@get "/simulate" function (req::HTTP.Request)
     _input_vals = (S, I, R, β, γ, tstart, tstop)
 
     # keep only given simulation parameter keys and values
-    idxs = filter(!isnothing, _input_vals)
+    idxs = findall(!isnothing, _input_vals)
     input_keys = _input_keys[[idxs...]]
     input_vals = _input_vals[[idxs...]]
     inputs = (; zip(input_keys, input_vals)...)
