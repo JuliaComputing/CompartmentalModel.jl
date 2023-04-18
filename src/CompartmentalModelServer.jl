@@ -123,8 +123,7 @@ function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
                      p = [β => βnew, γ => γnew])
 
     # solve and return
-    newsol = solution(newprob)
-    return ModelSolution(newsol, newprob)
+    return solution(newprob)
 end
 
 function __init__()
