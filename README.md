@@ -36,3 +36,22 @@ There are 3 main parts:
     - the API server,
     - entry point to run the server is `bin/main.jl`.
 1. Tests (`test/`) where we define unit tests.
+
+## FAQ
+
+### Module Initialization
+
+Initialization of the main module occurs immediately after the module is loaded.
+The function body of the `__init__` method defines how the module gets
+initialized. The benefit of defining `__init__` is that once the module is
+loaded, calling its functions such as `simulate` is fast. The down-side is that
+loading the module can take a bit longer. Since this package's main use case is
+to run as a web server, it is assumed that startup time is not critical. Most
+likely the server is a long running job where code loading and startup time are
+only incurred once. Therefore, module Initialization is acceptable.
+
+### Server Host
+
+By default, most web serves (including `Oxygen.jl`) run on the normal loop back
+address, localhost or equivalently `127.0.0.1`. However, on JuliaHub a web
+server host should be set to `0.0.0.0`.
