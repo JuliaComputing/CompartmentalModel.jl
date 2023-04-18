@@ -16,7 +16,7 @@ const DEFAULTS = (; S = 999.0::Float64, I = 1.0::Float64, R = 0.0::Float64,
                   β = (1 / 2)::Float64, γ = (1 / 3)::Float64,
                   tstart = 0.0::Float64, tstop = 30.0::Float64)
 
-"""
+@doc raw"""
     system()::ODESystem
 
 Construct the basic epidemiology compartmental model, the SIR model.
