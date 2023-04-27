@@ -71,3 +71,23 @@ only incurred once. Therefore, module Initialization is acceptable.
 By default, most web serves (including `Oxygen.jl`) run on the normal loop back
 address, localhost or equivalently `127.0.0.1`. However, on JuliaHub a web
 server host should be set to `0.0.0.0`.
+
+### Why Oxygen?
+
+Why use `Oxygen.jl`? Why not use `HTTP.jl` or `Genie.jl` or some other package?
+Each of the packages above can be used to achieve the same objective.
+
+`HTTP.jl` would be effective, but less convenient to write the same web service.
+It requires explicit registration of endpoints and does not offer functionality
+such as multithreading, JSON serialization and scheduling out-of-the-box.
+
+`Genie.jl` aims to provide a framework for building full-stack web applications
+which include database integrations, high-performance backend services, and
+model-view-controller frontends. Most of these capabilities are not necessary
+for our use case. Other features, such as database integrations, may be easily
+substituted for JuliaHub platform features, like DataSets.
+
+In summary, `Oxygen.jl` was chosen because of its convenience and targeted
+capabilities to solve our problem at hand. This light-weight package is an
+excellent choice when only requiring its prioritized
+[features](https://ndortega.github.io/Oxygen.jl/stable/#Features).
