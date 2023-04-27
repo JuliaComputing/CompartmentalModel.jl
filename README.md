@@ -15,7 +15,10 @@ to customize serialization/deserialization from Julia objects to JSON payloads.
 ## Template
 
 This repository can be used as a template for deploying your model as a web
-service. See the [project structure](#project-structure) below for guidance.
+service. To get started, click **Use this template** then **Create a new
+repository**. This will generate a new repository for you with the same
+directory and file structure. See the [project structure](#project-structure)
+below for more guidance.
 
 ### Model Used
 
