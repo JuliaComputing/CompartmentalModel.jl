@@ -1,10 +1,5 @@
 # CompartmentalModelServer.jl
 
-Demonstration of how to deploy an API server that interacts with a system of
-differential equations.
-
-## Purpose
-
 Creating a model is half the battle. Often models must be deployed to production
 in order to facilitate consumption by other team members or end users.To
 maximize effectiveness, the model should be easily accessible without prior
@@ -17,25 +12,43 @@ to program the API endpoints and
 [StructTypes.jl](https://juliadata.github.io/StructTypes.jl/stable/)
 to customize serialization/deserialization from Julia objects to JSON payloads.
 
-## Model
+## Template
+
+This repository can be used as a template for deploying your model as a web
+service. See the [project structure](#project-structure) below for guidance.
+
+### Model Used
 
 Compartmental models are widely used in many areas including epidemiology. The
 model used in this demonstration is the one of the simplest compartmental models
 which is used to derive many others, [the SIR
 model](https://en.wik_models_in_epidemiology).
 
-## Structure
+### Project Structure
 
 There are 3 main parts:
 
-1. Source (`src/`) where we define:
+1. `src/`: source code of project where we define:
     - the model itself,
     - methods for serialization/deserialization,
     - helper functions for solving new simulations.
-1. Server (`bin/`) where we define:
-    - the API server,
-    - entry point to run the server is `bin/main.jl`.
-1. Tests (`test/`) where we define unit tests.
+1. `bin/`: server entry point where we define:
+    - the API endpoints.
+1. `test/`: unit tests for project.
+
+### Deployment Instructions
+
+Follow these steps to deploy this package on JuliaHub!
+
+1. Go to JuliaHub's [Applications](https://juliahub.com/ui/Applications) page.
+1. Click **Add an application** (top-right of page).
+1. Enter the URL of this repository:
+    <https://github.com/JuliaComputing/CompartmentalModelServer.jl>
+    - Note that additional priviledges must be added for private repositories.
+1. Click **Add Application**
+1. See the application under **My Applications** section of Applications page.
+1. Click **Launch** to start an instance of the application.
+1. Click **Connect** to connect to that new instance.
 
 ## FAQ
 
