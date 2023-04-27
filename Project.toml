@@ -1,7 +1,7 @@
 name = "CompartmentalModelServer"
 uuid = "ba53a123-c07c-45c1-ae5e-57903b2ca1ad"
 authors = ["Jacob Vaverka <jacob.vaverka@juliahub.com>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
