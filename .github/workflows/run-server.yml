@@ -1,0 +1,11 @@
+name: run-compartmental-model-server
+on: [push]
+jobs:
+  runsh-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - uses: julia-actions/setup-julia@v1
+      with:
+        version: nightly
+        arch: arm
+    - run: julia --project bin/main.jl
