@@ -10,4 +10,4 @@ jobs:
           version: nightly
           arch: arm
       - run: uname -a
-      - run: julia --project bin/main.jl
+      - run: julia --project=@. -e '"using Pkg; Pkg.test()"'
