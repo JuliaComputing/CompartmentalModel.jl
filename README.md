@@ -1,4 +1,4 @@
-# CompartmentalModelServer.jl
+# CompartmentalModel.jl
 
 Creating a model is half the battle. Often models must be deployed to production
 in order to facilitate consumption by other team members or end users.To
@@ -46,7 +46,7 @@ Follow these steps to deploy this package on JuliaHub!
 1. Go to JuliaHub's [Applications](https://juliahub.com/ui/Applications) page.
 1. Click **Add an application** (top-right of page).
 1. Enter the URL of this repository:
-    <https://github.com/JuliaComputing/CompartmentalModelServer.jl>
+    <https://github.com/JuliaComputing/CompartmentalModel.jl>
     - Note that additional priviledges must be added for private repositories.
 1. Click **Add Application**
 1. See the application under **My Applications** section of Applications page.

@@ -1,4 +1,4 @@
-module CompartmentalModelServer
+module CompartmentalModel
 
 using ModelingToolkit
 using OrdinaryDiffEq
@@ -12,9 +12,15 @@ export simulate
 greet() = "Hello World!"
 
 "Model default values of type `NamedTuple{Float64}`."
-const DEFAULTS = (; S = 999.0::Float64, I = 1.0::Float64, R = 0.0::Float64,
-                  β = (1 / 2)::Float64, γ = (1 / 3)::Float64,
-                  tstart = 0.0::Float64, tstop = 30.0::Float64)
+const DEFAULTS = (;
+    S=999.0::Float64,
+    I=1.0::Float64,
+    R=0.0::Float64,
+    β=(1 / 2)::Float64,
+    γ=(1 / 3)::Float64,
+    tstart=0.0::Float64,
+    tstop=30.0::Float64,
+)
 
 @doc raw"""
     system()::ODESystem
@@ -49,9 +55,11 @@ function system()::ODESystem
     end
 
     # define equations
-    eqns = Equation[D(S) ~ -β * I * S / (S + I + R),
-                    D(I) ~ (β * I * S / (S + I + R)) - (γ * I),
-                    D(R) ~ γ * I]
+    eqns = Equation[
+        D(S) ~ -β * I * S / (S + I + R),
+        D(I) ~ (β * I * S / (S + I + R)) - (γ * I),
+        D(R) ~ γ * I,
+    ]
 
     # construct and return ode system
     @named _model = ODESystem(eqns, t, states, params)
@@ -61,10 +69,10 @@ end
 """
     problem(sys = system())::ODEProblem
     
-Constructs the original SIR model ode problem using `CompartmentalModelServer.DEFAULTS`.
+Constructs the original SIR model ode problem using `CompartmentalModel.DEFAULTS`.
 """
-function problem(sys = system())
-    ODEProblem(sys, Float64[], (DEFAULTS.tstart, DEFAULTS.tstop), Float64[])
+function problem(sys=system())
+    return ODEProblem(sys, Float64[], (DEFAULTS.tstart, DEFAULTS.tstop), Float64[])
 end
 
 "Holds values for beta and gamma as well as serialization/deserialization information."
@@ -83,9 +91,7 @@ struct ModelSolution
 end
 
 function ModelSolution(sol::ODESolution, prob::ODEProblem)
-    ModelSolution(sol.t,
-                  sol[:S], sol[:I], sol[:R],
-                  ModelParameters(prob.p...))
+    return ModelSolution(sol.t, sol[:S], sol[:I], sol[:R], ModelParameters(prob.p...))
 end
 
 StructTypes.StructType(::Type{ModelSolution}) = StructTypes.Struct()
@@ -96,9 +102,9 @@ StructTypes.StructType(::Type{ModelSolution}) = StructTypes.Struct()
 Constructs the original compartmental model ode solution and returns an object that can be
 serialized to JSON.
 """
-function solution(prob = problem())
+function solution(prob=problem())
     sol = solve(prob, Tsit5())
-    ModelSolution(sol, prob)
+    return ModelSolution(sol, prob)
 end
 
 """
@@ -108,9 +114,15 @@ Returns a new solution for the compartmental model given the initial conditions,
 and timespan passed as keyword arguments. The result is a `ModelSolution` object that can be
 readily serialized to JSON.
 """
-function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
-                  βnew = DEFAULTS.β, γnew = DEFAULTS.γ,
-                  tstart = DEFAULTS.tstart, tstop = DEFAULTS.tstop)
+function simulate(;
+    Snew=DEFAULTS.S,
+    Inew=DEFAULTS.I,
+    Rnew=DEFAULTS.R,
+    βnew=DEFAULTS.β,
+    γnew=DEFAULTS.γ,
+    tstart=DEFAULTS.tstart,
+    tstop=DEFAULTS.tstop,
+)
 
     # use originally defined model to unpack states and parameters
     sys = system()
@@ -119,8 +131,9 @@ function simulate(; Snew = DEFAULTS.S, Inew = DEFAULTS.I, Rnew = DEFAULTS.R,
     β, γ = ModelingToolkit.get_ps(sys)
 
     # construct new problem
-    newprob = remake(problem(); u0 = [Snew, Inew, Rnew], tspan = (tstart, tstop),
-                     p = [β => βnew, γ => γnew])
+    newprob = remake(
+        problem(); u0=[Snew, Inew, Rnew], tspan=(tstart, tstop), p=[β => βnew, γ => γnew]
+    )
 
     # solve and return
     return solution(newprob)
@@ -130,7 +143,7 @@ function __init__()
     system()
     problem()
     solution()
-    simulate()
+    return simulate()
 end
 
-end # module CompartmentalModelServer
+end # module CompartmentalModel
